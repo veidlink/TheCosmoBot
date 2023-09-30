@@ -53,10 +53,22 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 3. Monetization of the product
 
 ## 📱 How to use the bot
-1. /start
-![image](https://github.com/veidlink/TheCosmoBot/assets/137414808/81a369d7-907f-4d56-b448-d18e0f2a5c62)
-2. Press "Что это за приложение?🦄" if want to get bot's description, else press "Хочу скорее воспользоваться🤤" and send your photo. You'll get drugs we recommend for the detected problems.
-![image](https://github.com/veidlink/TheCosmoBot/assets/137414808/d00986c0-2523-45b2-81a3-60663a811513)
-3. If you want to see summarized reviews on the provided list of medication, press "Получить отзывы на препарат". Wait a little and get the results.
-![image](https://github.com/veidlink/TheCosmoBot/assets/137414808/088a2c89-3578-4101-a6c3-5d5a61d7d0af)
+1. Send /start command
+
+<div align="center">
+    <img src="https://github.com/veidlink/TheCosmoBot/assets/137414808/81a369d7-907f-4d56-b448-d18e0f2a5c62" width="300">
+</div>
+
+3. Press "Что это за приложение?🦄" if you want to get the bot's description, else press "Хочу скорее воспользоваться🤤" and send your photo. You'll get drugs we recommend for the detected problems.
+
+<div align="center">
+    <img src="https://github.com/veidlink/TheCosmoBot/assets/137414808/d00986c0-2523-45b2-81a3-60663a811513" width="300">
+</div>
+
+4. If you want to see summarized reviews on the provided list of medication, press "Получить отзывы на препарат". Wait a little and get the results.
+
+<div align="center">
+    <img src="https://github.com/veidlink/TheCosmoBot/assets/137414808/088a2c89-3578-4101-a6c3-5d5a61d7d0af" width="300">
+</div>
+
 
