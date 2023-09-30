@@ -28,7 +28,8 @@ import uuid
 import time
 import logging                                        
 import torch
-import requests                                
+import requests
+import asyncio                           
 from aiogram import Bot, Dispatcher, types
 from bs4 import BeautifulSoup
 from PIL import Image
