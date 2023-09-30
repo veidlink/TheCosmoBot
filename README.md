@@ -1,4 +1,4 @@
-![image](https://github.com/veidlink/TheCosmoBot/assets/137414808/91e451fa-53f2-4a5b-9e7c-df09b0b2851d)# CosmoBot
+# CosmoBot
 Elbrus Bootcamp | Team project
 
 
