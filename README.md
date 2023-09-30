@@ -10,17 +10,12 @@ Elbrus Bootcamp | Team project
 ## 🎯 Task
 Creating the CosmoBot Telegram bot, a personal assistant in dealing with skin imperfections and the fear of visiting a cosmetologist. Upload your photo, and the bot will detect imperfections and provide an approximate treatment plan for you. You can also view summarized reviews of cosmetic products.
 ## Tech stack 
-**BeautifulSoup** for parsing cosmetic product data
-
-**Pandas for data** storage and processing
-
-**YOLO5** for imperfection detection
-
-**Aiogram** for bot development
-
-**YandexCloud** for deployment
-
-**HuggingFace** for processing product reviews
+- **BeautifulSoup** for parsing cosmetic product data
+- **Pandas** for data storage and processing
+- **YOLO5** for imperfection detection
+- **HuggingFace** for processing product reviews
+- **Aiogram** for bot development
+- **YandexCloud** for deployment
 
 ## 📚 Libraries 
 
