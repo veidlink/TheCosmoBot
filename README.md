@@ -50,7 +50,7 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 3. Monetization of the product
 
 ## 📱 How to use the bot
-You can find our bot by this (link)[https://t.me/the_cosmo_bot]. 
+0. You can find our bot by this !(link)[https://t.me/the_cosmo_bot]. 
 1. Send /start command
 
 <div align="center">
