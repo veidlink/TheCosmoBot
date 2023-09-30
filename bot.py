@@ -6,7 +6,8 @@ import pandas as pd
 import time
 import logging                                         
 import torch
-import requests                                
+import requests
+import asyncio                                
 from aiogram import Bot, Dispatcher, types
 from bs4 import BeautifulSoup
 from PIL import Image
@@ -329,12 +330,14 @@ async def send_drugs(message: types.Message):
     except Exception as e:
         logging.error(f'Failed to delete file: {e}')
 
-    # Создание inline-кнопок
-    get_reviews_button = InlineKeyboardButton(text="Получить отзывы на препараты", callback_data="get_reviews")
-    keyboard = InlineKeyboardMarkup().add(get_reviews_button)
-    
-    # Отправка сообщения с кнопками
-    await message.reply("Выберите действие:", reply_markup=keyboard)
+    if result != 'У вас не обнаружено проблемок, все хорошо 🦄':
+        # Создание inline-кнопок
+        get_reviews_button = InlineKeyboardButton(text="Получить отзывы на препараты", callback_data="get_reviews")
+        keyboard = InlineKeyboardMarkup().add(get_reviews_button)
+        # Отправка сообщения с кнопками
+        await message.reply("Выберите действие:", reply_markup=keyboard)
+    else:
+        pass
    
 @dp.callback_query_handler(text="get_reviews")
 async def get_reviews(callback_query: types.CallbackQuery):
@@ -366,6 +369,7 @@ async def get_reviews(callback_query: types.CallbackQuery):
                     for name, url in zip(top_3_names, urls):
                         url = 'https://'+url
                     # Отправляем HTTP запрос и получаем ответ
+                        await asyncio.sleep(1)
                         r = requests.get(url, headers=headers)
                         soup = BeautifulSoup(r.text, 'html.parser')
                         drug_descs = soup.find('div', 'kr_review_plain_text').text
@@ -383,7 +387,7 @@ async def get_reviews(callback_query: types.CallbackQuery):
                     await bot.send_message(user_id, result)                    
                     
             except Exception as ex:
-                result = f'\nОшибка при саммаризации: {ex}'
+                result = f'\nОшибка при получении отзывов с сайта. Пожалуйста, попробуйте еще раз.'
                 await bot.send_message(user_id, result)
 
         else:
@@ -403,6 +407,7 @@ async def get_reviews(callback_query: types.CallbackQuery):
                 for name, url in zip(top_3_kislots, urls_kislots):
                     url = 'https://'+url
                     # Отправляем HTTP запрос и получаем ответ
+                    await asyncio.sleep(1)
                     r = requests.get(url, headers=headers)
                     soup = BeautifulSoup(r.text, 'html.parser')
                     drug_descs = soup.find('div', 'kr_review_plain_text').text
@@ -421,6 +426,7 @@ async def get_reviews(callback_query: types.CallbackQuery):
                 for name, url in zip(top_3_pilings, urls_pilings):
                     url = 'https://'+url
                     # Отправляем HTTP запрос и получаем ответ
+                    await asyncio.sleep(1)
                     r = requests.get(url, headers=headers)
                     soup = BeautifulSoup(r.text, 'html.parser')
                     drug_descs = soup.find('div', 'kr_review_plain_text').text
@@ -463,6 +469,7 @@ async def get_reviews(callback_query: types.CallbackQuery):
                         for name, url in zip(top_3_names, urls):
                             url = 'https://'+url
                         # Отправляем HTTP запрос и получаем ответ
+                            await asyncio.sleep(1)
                             r = requests.get(url, headers=headers)
                             soup = BeautifulSoup(r.text, 'html.parser')
                             drug_descs = soup.find('div', 'kr_review_plain_text').text
@@ -481,7 +488,7 @@ async def get_reviews(callback_query: types.CallbackQuery):
                         # await message.reply('\n\nДумаю... ⏳')
 
                 except Exception as ex:
-                    result = f'\nОшибка 3: {ex}'
+                    result = f'\nОшибка при получении отзывов с сайта. Пожалуйста, попробуйте еще раз.'
                     await bot.send_message(user_id, result)
                     
             else:
@@ -501,6 +508,7 @@ async def get_reviews(callback_query: types.CallbackQuery):
                     for name, url in zip(top_3_kislots, urls_kislots):
                         url = 'https://'+url
                         # Отправляем HTTP запрос и получаем ответ
+                        await asyncio.sleep(1)
                         r = requests.get(url, headers=headers)
                         soup = BeautifulSoup(r.text, 'html.parser')
                         drug_descs = soup.find('div', 'kr_review_plain_text').text
@@ -519,6 +527,7 @@ async def get_reviews(callback_query: types.CallbackQuery):
                     for name, url in zip(top_3_pilings, urls_pilings):
                         url = 'https://'+url
                         # Отправляем HTTP запрос и получаем ответ
+                        await asyncio.sleep(1)
                         r = requests.get(url, headers=headers)
                         soup = BeautifulSoup(r.text, 'html.parser')
                         drug_descs = soup.find('div', 'kr_review_plain_text').text
@@ -535,7 +544,7 @@ async def get_reviews(callback_query: types.CallbackQuery):
 
                 except Exception as ex:
                     result = f'\nОшибка 2: {ex}'
-                    await message.reply(result)
+                    await bot.send_message(user_id, result)
                 
 if __name__ == '__main__':
     from aiogram import executor
