@@ -15,7 +15,7 @@ Creating the CosmoBot Telegram bot, a personal assistant in dealing with skin im
 - **YOLO5** for imperfection detection
 - **HuggingFace** for processing product reviews
 - **Aiogram** for bot development
-- **YandexCloud** for deployment
+- **YandexCloud** and **Docker** for deployment
 
 ## 📚 Libraries 
 
@@ -24,6 +24,7 @@ Creating the CosmoBot Telegram bot, a personal assistant in dealing with skin im
 import json
 import re
 import pandas as pd
+import uuid
 import time
 import logging                                        
 import torch
