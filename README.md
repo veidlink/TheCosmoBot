@@ -1,4 +1,4 @@
-# CosmoBot
+# TheCosmoBot
 
 ## 🦸‍♂️ Team
 1. [Vika Ivanova](https://github.com/Vikaska031)
