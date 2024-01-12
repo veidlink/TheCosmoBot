@@ -27,7 +27,7 @@ class UserStates(StatesGroup):
     ParsingReviews = State()   # Парсинг отзывов
 
 # Настройка бота
-
+    
 # Read the configuration file
 with open('config.json', 'r') as config_file:
     config_data = json.load(config_file)
@@ -382,10 +382,271 @@ async def send_drugs(message: types.Message, state: FSMContext):
     else:
         pass
 
+# @dp.callback_query_handler(lambda callback_query: callback_query.data in ["get_reviews", "not_summarize_reviews"], state=UserStates.ShowingResults)
+# async def handle_review_buttons(callback_query: types.CallbackQuery, state: FSMContext):
+#     user_id = callback_query.from_user.id
+#     user_data = await state.get_data()
+
+#     if callback_query.data == "get_reviews":
+#         await UserStates.ParsingReviews.set()
+#         await bot.send_message(user_id, 'Немного терпения... ⏳')
+
+#         detected_labels = user_data.get('detected_labels', [])
+#         headers = requests.utils.default_headers()
+        
+#         if len(detected_labels)==1:
+#             detected_labels = detected_labels[0]
+#             # await message.reply(detected_labels)
+#             if detected_labels != 'hyperceratos':
+#                 if detected_labels in ['papula', 'postacne', 'pustula']:
+#                     data = pd.read_csv("datasets/clean/acne_clean_with_categories.csv")
+#                 elif detected_labels == "cuperos":
+#                     data = pd.read_csv("datasets/clean/cuperoz_clean_with_categories.csv")
+#                 elif detected_labels == 'camedon':
+#                     data = pd.read_csv("datasets/clean/camedons_clean_with_categories.csv")
+
+#                 try:
+#                     all_drug_responses = {}
+#                     for x in data['category'].unique():
+#                         result = ''
+#                         category_data = data[data['category'] == x]
+#                         top_3_names = category_data['drug_name'][:3].tolist()            
+#                         urls = category_data['page_url'][:3]
+#                         drug_responses = {}
+            
+#                         for name, url in zip(top_3_names, urls):
+#                             url = 'https://'+url
+#                         # Отправляем HTTP запрос и получаем ответ
+#                             await asyncio.sleep(1)
+#                             r = requests.get(url, headers=headers)
+#                             soup = BeautifulSoup(r.text, 'html.parser')
+#                             drug_descs = soup.find('div', 'kr_review_plain_text').text
+#                             prompt_review  = f'{drug_descs[:3000]} \n\nВыдели главную мысль из всех отзывов. Ответ начни со слов: "Этот препарат...'
+#                             response_text = generate(prompt_review)
+#                             drug_responses[name] = response_text
+                            
+#                         all_drug_responses[x] = drug_responses                  
+
+#                     for cat, drugnamesNreviews in all_drug_responses.items():
+#                         smiley = category_smileys.get(cat, "😃")  # По умолчанию используется "😃"
+#                         result = f"\n\n{smiley} Категория: {cat}"
+#                         for i, (name, drug_r3views) in enumerate(drugnamesNreviews.items(), start=1):
+#                             result += f'\n\n{i}. {name}. \n\n{drug_r3views}'
+#                         await bot.send_message(user_id, result)                    
+                        
+#                 except Exception as ex:
+#                     result = f'\nОшибка при получении отзывов с сайта. Пожалуйста, попробуйте еще раз.'
+#                     await bot.send_message(user_id, result)
+
+#             else:
+#                 data = pd.read_csv('datasets/clean/kislots_and_pilings.csv')
+#                 kislots_names = data[data['category'] =='кислота']['drug_name'].tolist()
+#                 pilings_names = data[data['category'] =='пилинг']['drug_name'].tolist()
+
+#                 try:
+#                     result = ''
+#                     pilings_reviews = {}
+#                     kislots_reviews = {}
+#                     top_3_kislots = kislots_names[:3]
+#                     top_3_pilings = pilings_names[:3]
+#                     urls_kislots = data[data['category'] =='кислота']['page_url'][:3]
+#                     urls_pilings = data[data['category'] =='пилинг']['page_url'][:3]
+
+#                     for name, url in zip(top_3_kislots, urls_kislots):
+#                         url = 'https://'+url
+#                         # Отправляем HTTP запрос и получаем ответ
+#                         await asyncio.sleep(1)
+#                         r = requests.get(url, headers=headers)
+#                         soup = BeautifulSoup(r.text, 'html.parser')
+#                         drug_descs = soup.find('div', 'kr_review_plain_text').text
+#                         prompt_review  = f'{drug_descs[:4000]} \n\nВыдели главную мысль из всех отзывов. Ответ начни со слов: "Этот препарат...'
+#                         response_text = generate(prompt_review)
+#                         kislots_reviews[name] = response_text
+                    
+#                     # Вывод результатов для кислот
+#                     smiley = category_smileys.get('кислота', "😃")
+#                     result = f'\n\n{smiley} Кислоты:'
+#                     for i, (name, reviews) in enumerate(kislots_reviews.items(), start=1):
+#                         result += f'\n\n{i}. {name}. \n\n{reviews}'
+#                     await bot.send_message(user_id, result)
+#                     await bot.send_message(user_id, '\n\nДумаю... ⏳')
+
+#                     for name, url in zip(top_3_pilings, urls_pilings):
+#                         url = 'https://'+url
+#                         # Отправляем HTTP запрос и получаем ответ
+#                         await asyncio.sleep(1)
+#                         r = requests.get(url, headers=headers)
+#                         soup = BeautifulSoup(r.text, 'html.parser')
+#                         drug_descs = soup.find('div', 'kr_review_plain_text').text
+#                         prompt_review  = f'{drug_descs[:4000]} \n\nВыдели главную мысль из всех отзывов. Ответ начни со слов: "Этот препарат...'
+#                         response_text = generate(prompt_review)
+#                         pilings_reviews[name] = response_text
+
+#                     # Вывод результатов для пилингов
+#                     smiley = category_smileys.get('пилинг', "😃")
+#                     result = f'\n\n{smiley} Пилинги:'
+#                     for i, (name, reviews) in enumerate(pilings_reviews.items(), start=1):
+#                         result += f'\n\n{i}. {name}. \n\n{reviews}'
+#                     await bot.send_message(user_id, result)
+
+#                 except Exception as ex:
+#                     result = f'\nОшибка 2: {ex}'
+#                     await bot.send_message(user_id, result)
+
+
+#         elif len(detected_labels)>=2:
+#             detected_labels = ['postacne' if x in ['papula', 'pustula'] else x for x in detected_labels]
+#             for problem in detected_labels:
+#                 if problem != 'hyperceratos':
+#                     if problem in ['papula', 'postacne', 'pustula']:
+#                         data = pd.read_csv("datasets/clean/acne_clean_with_categories.csv")
+#                     elif problem == "cuperos":
+#                         data = pd.read_csv("datasets/clean/cuperoz_clean_with_categories.csv")
+#                     elif problem == 'camedon':
+#                         data = pd.read_csv("datasets/clean/camedons_clean_with_categories.csv")
+
+#                     try:
+#                         all_drug_responses = {}
+#                         for x in data['category'].unique():
+#                             result = ''
+#                             drug_responses = {}
+#                             category_data = data[data['category'] == x]
+#                             urls = category_data['page_url'][:3]
+#                             top_3_names = category_data['drug_name'][:3].tolist()
+
+#                             for name, url in zip(top_3_names, urls):
+#                                 url = 'https://'+url
+#                             # Отправляем HTTP запрос и получаем ответ
+#                                 await asyncio.sleep(1)
+#                                 r = requests.get(url, headers=headers)
+#                                 soup = BeautifulSoup(r.text, 'html.parser')
+#                                 drug_descs = soup.find('div', 'kr_review_plain_text').text
+#                                 prompt_review  = f'{drug_descs[:4000]} \n\nВыдели главную мысль из всех отзывов. Ответ начни со слов: "Этот препарат...'
+#                                 response_text = generate(prompt_review)
+#                                 drug_responses[name] = response_text
+
+#                             all_drug_responses[x] = drug_responses    
+
+#                         for cat, drugnamesNreviews in all_drug_responses.items():
+#                             smiley = category_smileys.get(cat, "😃")  # По умолчанию используется "😃"
+#                             result = f"\n\n{smiley} Категория: {cat}"
+#                             for i, (name, drug_r3views) in enumerate(drugnamesNreviews.items(), start=1):
+#                                 result += f'\n\n{i}. {name}. \n\n{drug_r3views}'
+#                             await bot.send_message(user_id, result)  
+#                             # await message.reply('\n\nДумаю... ⏳')
+
+#                     except Exception as ex:
+#                         result = f'\nОшибка при получении отзывов с сайта. Пожалуйста, попробуйте еще раз.'
+#                         await bot.send_message(user_id, result)
+                        
+#                 else:
+#                     data = pd.read_csv('datasets/clean/kislots_and_pilings.csv')
+#                     kislots_names = data[data['category'] =='кислота']['drug_name'].tolist()
+#                     pilings_names = data[data['category'] =='пилинг']['drug_name'].tolist()
+
+#                     try:
+#                         result = ''
+#                         pilings_reviews = {}
+#                         kislots_reviews = {}
+#                         top_3_kislots = kislots_names[:3]
+#                         top_3_pilings = pilings_names[:3]
+#                         urls_kislots = data[data['category'] =='кислота']['page_url'][:3]
+#                         urls_pilings = data[data['category'] =='пилинг']['page_url'][:3]
+
+#                         for name, url in zip(top_3_kislots, urls_kislots):
+#                             url = 'https://'+url
+#                             # Отправляем HTTP запрос и получаем ответ
+#                             await asyncio.sleep(1)
+#                             r = requests.get(url, headers=headers)
+#                             soup = BeautifulSoup(r.text, 'html.parser')
+#                             drug_descs = soup.find('div', 'kr_review_plain_text').text
+#                             prompt_review  = f'{drug_descs[:4000]} \n\nВыдели главную мысль из всех отзывов. Ответ начни со слов: "Этот препарат...'
+#                             response_text = generate(prompt_review)
+#                             kislots_reviews[name] = response_text
+                        
+#                         # Вывод результатов для кислот
+#                         smiley = category_smileys.get('кислота', "😃")
+#                         result = f'\n\n{smiley} Кислоты:'
+#                         for i, (name, reviews) in enumerate(kislots_reviews.items(), start=1):
+#                             result += f'\n\n{i}. {name}. \n\n{reviews}'
+#                         await bot.send_message(user_id, result) 
+#                         await bot.send_message(user_id, '\n\nДумаю... ⏳')
+
+#                         for name, url in zip(top_3_pilings, urls_pilings):
+#                             url = 'https://'+url
+#                             # Отправляем HTTP запрос и получаем ответ
+#                             await asyncio.sleep(1)
+#                             r = requests.get(url, headers=headers)
+#                             soup = BeautifulSoup(r.text, 'html.parser')
+#                             drug_descs = soup.find('div', 'kr_review_plain_text').text
+#                             prompt_review  = f'{drug_descs[:4000]} \n\nВыдели главную мысль из всех отзывов. Ответ начни со слов: "Этот препарат...'
+#                             response_text = generate(prompt_review)
+#                             pilings_reviews[name] = response_text
+
+#                         # Вывод результатов для пилингов
+#                         smiley = category_smileys.get('пилинг', "😃")
+#                         result = f'\n\n{smiley} Пилинги:'
+#                         for i, (name, reviews) in enumerate(pilings_reviews.items(),start=1):
+#                             result += f'\n\n{i}. {name}. \n\n{reviews}'
+#                         await bot.send_message(user_id, result) 
+
+#                     except Exception as ex:
+#                         result = f'\nОшибка 2: {ex}'
+#                         await bot.send_message(user_id, result)   
+
+#         await bot.send_message(user_id, 'Введите команду /start для начала работы')
+#         await state.finish()  # Завершение сессии состояний после выполнения действия
+
+#     elif callback_query.data == "not_summarize_reviews":
+#         await bot.send_message(user_id, 'Введите команду /start для начала работы')
+#         await state.finish()  # Reset the state to its initial state
+#         # Send a message or perform any other desired actions when "Не суммаризировать отзывы на препараты" is clicked
+
+#     # await callback_query.answer()  # Acknowledge the button press
+
+def auto_chunk_comments(comments, max_chunk_length):
+    """
+    Divide comments into equal-sized chunks, ensuring each chunk ends at a "\r\n" boundary.
+
+    Args:
+    comments (str): The text containing comments separated by "\r\n".
+    max_chunk_length (int): The maximum length for each chunk.
+
+    Returns:
+    List[str]: A list of equal-sized chunks.
+    """
+    # Split the comments into individual comments using "\r\n" as the separator
+    individual_comments = comments.split("\r\n")
+
+    # Initialize variables to store the chunks and current chunk
+    chunks = []
+    current_chunk = ""
+
+    # Iterate through individual comments
+    for comment in individual_comments:
+        # Check if adding the current comment to the current chunk exceeds the maximum length
+        if len(current_chunk) + len(comment) + len("\r\n") <= max_chunk_length:
+            # Add the comment to the current chunk
+            if current_chunk:
+                current_chunk += "\r\n"
+            current_chunk += comment
+        else:
+            # If adding the comment exceeds the maximum length, start a new chunk
+            chunks.append(current_chunk)
+            current_chunk = comment
+
+    # Append the last chunk if it's not empty
+    if current_chunk:
+        chunks.append(current_chunk)
+
+    return chunks
+
+
 @dp.callback_query_handler(lambda callback_query: callback_query.data in ["get_reviews", "not_summarize_reviews"], state=UserStates.ShowingResults)
 async def handle_review_buttons(callback_query: types.CallbackQuery, state: FSMContext):
     user_id = callback_query.from_user.id
     user_data = await state.get_data()
+    all_comments = pd.read_csv('parsed_comments/all_comments.csv')
 
     if callback_query.data == "get_reviews":
         await UserStates.ParsingReviews.set()
@@ -413,18 +674,29 @@ async def handle_review_buttons(callback_query: types.CallbackQuery, state: FSMC
                         top_3_names = category_data['drug_name'][:3].tolist()            
                         urls = category_data['page_url'][:3]
                         drug_responses = {}
-            
+
                         for name, url in zip(top_3_names, urls):
-                            url = 'https://'+url
-                        # Отправляем HTTP запрос и получаем ответ
-                            await asyncio.sleep(1)
-                            r = requests.get(url, headers=headers)
-                            soup = BeautifulSoup(r.text, 'html.parser')
-                            drug_descs = soup.find('div', 'kr_review_plain_text').text
-                            prompt_review  = f'{drug_descs[:3000]} \n\nВыдели главную мысль из всех отзывов. Ответ начни со слов: "Этот препарат...'
-                            response_text = generate(prompt_review)
-                            drug_responses[name] = response_text
-                            
+                            # Combine all comments for a particular drug
+                            drug_descs = all_comments.loc[all_comments['Drug Name'] == name]['Comments'].str.cat(sep='\r\n')[:30000]
+
+                            # Chunk the combined comments using the auto_chunk_comments function
+                            chunks = auto_chunk_comments(drug_descs, 3000)  # Assuming 3000 is the max chunk length
+
+                            # Generate summary for each chunk
+                            chunk_summaries = []
+                            for chunk in chunks:
+                                chunk_prompt = f'{chunk[:3000]} \n\nВыдели главную мысль из этого фрагмента отзывов. Ответ начни со слов: "Этот фрагмент отзывов говорит о том, что..."'
+                                chunk_summary = generate(chunk_prompt)  # Replace 'generate' with your summarization function
+                                chunk_summaries.append(chunk_summary)
+
+                            # Combine chunk summaries to create a global summary
+                            combined_chunk_summaries = ' '.join(chunk_summaries)
+                            global_summary_prompt = f'{combined_chunk_summaries[:3000]} \n\nСуммируй общую мысль всех этих фрагментов. Ответ начни со слов: "Этот препарат..."'
+                            global_summary = generate(global_summary_prompt)
+
+                            # Store the global summary for the drug
+                            drug_responses[name] = global_summary
+                                
                         all_drug_responses[x] = drug_responses                  
 
                     for cat, drugnamesNreviews in all_drug_responses.items():
@@ -440,8 +712,8 @@ async def handle_review_buttons(callback_query: types.CallbackQuery, state: FSMC
 
             else:
                 data = pd.read_csv('datasets/clean/kislots_and_pilings.csv')
-                kislots_names = data[data['category'] =='кислота']['drug_name'].tolist()
-                pilings_names = data[data['category'] =='пилинг']['drug_name'].tolist()
+                kislots_names = data[data['category'] == 'кислота']['drug_name'].tolist()
+                pilings_names = data[data['category'] == 'пилинг']['drug_name'].tolist()
 
                 try:
                     result = ''
@@ -449,40 +721,47 @@ async def handle_review_buttons(callback_query: types.CallbackQuery, state: FSMC
                     kislots_reviews = {}
                     top_3_kislots = kislots_names[:3]
                     top_3_pilings = pilings_names[:3]
-                    urls_kislots = data[data['category'] =='кислота']['page_url'][:3]
-                    urls_pilings = data[data['category'] =='пилинг']['page_url'][:3]
+                    urls_kislots = data[data['category'] == 'кислота']['page_url'][:3]
+                    urls_pilings = data[data['category'] == 'пилинг']['page_url'][:3]
 
+                    max_chunk_length = 3000  # Define your maximum chunk length
+
+                    # Process for Kislots
                     for name, url in zip(top_3_kislots, urls_kislots):
-                        url = 'https://'+url
-                        # Отправляем HTTP запрос и получаем ответ
-                        await asyncio.sleep(1)
-                        r = requests.get(url, headers=headers)
-                        soup = BeautifulSoup(r.text, 'html.parser')
-                        drug_descs = soup.find('div', 'kr_review_plain_text').text
-                        prompt_review  = f'{drug_descs[:4000]} \n\nВыдели главную мысль из всех отзывов. Ответ начни со слов: "Этот препарат...'
-                        response_text = generate(prompt_review)
-                        kislots_reviews[name] = response_text
-                    
-                    # Вывод результатов для кислот
+                        drug_descs = all_comments.loc[all_comments['Drug Name'] == name]['Comments'].str.cat(sep='\r\n')[:30000]
+                        chunks = auto_chunk_comments(drug_descs, max_chunk_length)
+                        chunk_summaries = []
+                        for chunk in chunks:
+                            chunk_prompt = f'{chunk[:3000]} \n\nВыдели главную мысль из этого фрагмента отзывов...'
+                            chunk_summary = generate(chunk_prompt)
+                            chunk_summaries.append(chunk_summary)
+                        combined_chunk_summaries = ' '.join(chunk_summaries)
+                        global_summary_prompt = f'{combined_chunk_summaries[:3000]} \n\nСуммируй общую мысль всех этих фрагментов...'
+                        global_summary = generate(global_summary_prompt)
+                        kislots_reviews[name] = global_summary
+
+                    # Output for Kislots
                     smiley = category_smileys.get('кислота', "😃")
                     result = f'\n\n{smiley} Кислоты:'
                     for i, (name, reviews) in enumerate(kislots_reviews.items(), start=1):
                         result += f'\n\n{i}. {name}. \n\n{reviews}'
                     await bot.send_message(user_id, result)
-                    await bot.send_message(user_id, '\n\nДумаю... ⏳')
 
+                    # Process for Pilings
                     for name, url in zip(top_3_pilings, urls_pilings):
-                        url = 'https://'+url
-                        # Отправляем HTTP запрос и получаем ответ
-                        await asyncio.sleep(1)
-                        r = requests.get(url, headers=headers)
-                        soup = BeautifulSoup(r.text, 'html.parser')
-                        drug_descs = soup.find('div', 'kr_review_plain_text').text
-                        prompt_review  = f'{drug_descs[:4000]} \n\nВыдели главную мысль из всех отзывов. Ответ начни со слов: "Этот препарат...'
-                        response_text = generate(prompt_review)
-                        pilings_reviews[name] = response_text
+                        drug_descs = all_comments.loc[all_comments['Drug Name'] == name]['Comments'].str.cat(sep='\r\n')[:30000]
+                        chunks = auto_chunk_comments(drug_descs, max_chunk_length)
+                        chunk_summaries = []
+                        for chunk in chunks:
+                            chunk_prompt = f'{chunk[:3000]} \n\nВыдели главную мысль из этого фрагмента отзывов...'
+                            chunk_summary = generate(chunk_prompt)
+                            chunk_summaries.append(chunk_summary)
+                        combined_chunk_summaries = ' '.join(chunk_summaries)
+                        global_summary_prompt = f'{combined_chunk_summaries[:3000]} \n\nСуммируй общую мысль всех этих фрагментов...'
+                        global_summary = generate(global_summary_prompt)
+                        pilings_reviews[name] = global_summary
 
-                    # Вывод результатов для пилингов
+                    # Output for Pilings
                     smiley = category_smileys.get('пилинг', "😃")
                     result = f'\n\n{smiley} Пилинги:'
                     for i, (name, reviews) in enumerate(pilings_reviews.items(), start=1):
@@ -492,7 +771,6 @@ async def handle_review_buttons(callback_query: types.CallbackQuery, state: FSMC
                 except Exception as ex:
                     result = f'\nОшибка 2: {ex}'
                     await bot.send_message(user_id, result)
-
 
         elif len(detected_labels)>=2:
             detected_labels = ['postacne' if x in ['papula', 'pustula'] else x for x in detected_labels]
@@ -514,18 +792,29 @@ async def handle_review_buttons(callback_query: types.CallbackQuery, state: FSMC
                             urls = category_data['page_url'][:3]
                             top_3_names = category_data['drug_name'][:3].tolist()
 
-                            for name, url in zip(top_3_names, urls):
-                                url = 'https://'+url
-                            # Отправляем HTTP запрос и получаем ответ
-                                await asyncio.sleep(1)
-                                r = requests.get(url, headers=headers)
-                                soup = BeautifulSoup(r.text, 'html.parser')
-                                drug_descs = soup.find('div', 'kr_review_plain_text').text
-                                prompt_review  = f'{drug_descs[:4000]} \n\nВыдели главную мысль из всех отзывов. Ответ начни со слов: "Этот препарат...'
-                                response_text = generate(prompt_review)
-                                drug_responses[name] = response_text
+                        for name, url in zip(top_3_names, urls):
+                            # Combine all comments for a particular drug
+                            drug_descs = all_comments.loc[all_comments['Drug Name'] == name]['Comments'].str.cat(sep='\r\n')[:30000]
 
-                            all_drug_responses[x] = drug_responses    
+                            # Chunk the combined comments using the auto_chunk_comments function
+                            chunks = auto_chunk_comments(drug_descs, 3000)  # Assuming 3000 is the max chunk length
+
+                            # Generate summary for each chunk
+                            chunk_summaries = []
+                            for chunk in chunks:
+                                chunk_prompt = f'{chunk[:3000]} \n\nВыдели главную мысль из этого фрагмента отзывов. Ответ начни со слов: "Этот фрагмент отзывов говорит о том, что..."'
+                                chunk_summary = generate(chunk_prompt)  # Replace 'generate' with your summarization function
+                                chunk_summaries.append(chunk_summary)
+
+                            # Combine chunk summaries to create a global summary
+                            combined_chunk_summaries = ' '.join(chunk_summaries)
+                            global_summary_prompt = f'{combined_chunk_summaries[:3000]} \n\nСуммируй общую мысль всех этих фрагментов. Ответ начни со слов: "Этот препарат..."'
+                            global_summary = generate(global_summary_prompt)
+
+                            # Store the global summary for the drug
+                            drug_responses[name] = global_summary
+                                
+                        all_drug_responses[x] = drug_responses       
 
                         for cat, drugnamesNreviews in all_drug_responses.items():
                             smiley = category_smileys.get(cat, "😃")  # По умолчанию используется "😃"
@@ -552,17 +841,20 @@ async def handle_review_buttons(callback_query: types.CallbackQuery, state: FSMC
                         top_3_pilings = pilings_names[:3]
                         urls_kislots = data[data['category'] =='кислота']['page_url'][:3]
                         urls_pilings = data[data['category'] =='пилинг']['page_url'][:3]
-
+                        
+                        # Process for Kislots
                         for name, url in zip(top_3_kislots, urls_kislots):
-                            url = 'https://'+url
-                            # Отправляем HTTP запрос и получаем ответ
-                            await asyncio.sleep(1)
-                            r = requests.get(url, headers=headers)
-                            soup = BeautifulSoup(r.text, 'html.parser')
-                            drug_descs = soup.find('div', 'kr_review_plain_text').text
-                            prompt_review  = f'{drug_descs[:4000]} \n\nВыдели главную мысль из всех отзывов. Ответ начни со слов: "Этот препарат...'
-                            response_text = generate(prompt_review)
-                            kislots_reviews[name] = response_text
+                            drug_descs = all_comments.loc[all_comments['Drug Name'] == name]['Comments'].str.cat(sep='\r\n')[:30000]
+                            chunks = auto_chunk_comments(drug_descs, max_chunk_length)
+                            chunk_summaries = []
+                            for chunk in chunks:
+                                chunk_prompt = f'{chunk[:3000]} \n\nВыдели главную мысль из этого фрагмента отзывов...'
+                                chunk_summary = generate(chunk_prompt)
+                                chunk_summaries.append(chunk_summary)
+                            combined_chunk_summaries = ' '.join(chunk_summaries)
+                            global_summary_prompt = f'{combined_chunk_summaries[:3000]} \n\nСуммируй общую мысль всех этих фрагментов...'
+                            global_summary = generate(global_summary_prompt)
+                            kislots_reviews[name] = global_summary
                         
                         # Вывод результатов для кислот
                         smiley = category_smileys.get('кислота', "😃")
@@ -572,16 +864,19 @@ async def handle_review_buttons(callback_query: types.CallbackQuery, state: FSMC
                         await bot.send_message(user_id, result) 
                         await bot.send_message(user_id, '\n\nДумаю... ⏳')
 
+                        # Process for Pilings
                         for name, url in zip(top_3_pilings, urls_pilings):
-                            url = 'https://'+url
-                            # Отправляем HTTP запрос и получаем ответ
-                            await asyncio.sleep(1)
-                            r = requests.get(url, headers=headers)
-                            soup = BeautifulSoup(r.text, 'html.parser')
-                            drug_descs = soup.find('div', 'kr_review_plain_text').text
-                            prompt_review  = f'{drug_descs[:4000]} \n\nВыдели главную мысль из всех отзывов. Ответ начни со слов: "Этот препарат...'
-                            response_text = generate(prompt_review)
-                            pilings_reviews[name] = response_text
+                            drug_descs = all_comments.loc[all_comments['Drug Name'] == name]['Comments'].str.cat(sep='\r\n')[:30000]
+                            chunks = auto_chunk_comments(drug_descs, max_chunk_length)
+                            chunk_summaries = []
+                            for chunk in chunks:
+                                chunk_prompt = f'{chunk[:3000]} \n\nВыдели главную мысль из этого фрагмента отзывов...'
+                                chunk_summary = generate(chunk_prompt)
+                                chunk_summaries.append(chunk_summary)
+                            combined_chunk_summaries = ' '.join(chunk_summaries)
+                            global_summary_prompt = f'{combined_chunk_summaries[:3000]} \n\nСуммируй общую мысль всех этих фрагментов...'
+                            global_summary = generate(global_summary_prompt)
+                            pilings_reviews[name] = global_summary
 
                         # Вывод результатов для пилингов
                         smiley = category_smileys.get('пилинг', "😃")
@@ -603,6 +898,7 @@ async def handle_review_buttons(callback_query: types.CallbackQuery, state: FSMC
         # Send a message or perform any other desired actions when "Не суммаризировать отзывы на препараты" is clicked
 
     # await callback_query.answer()  # Acknowledge the button press
+
 
 if __name__ == '__main__':
     from aiogram import executor
