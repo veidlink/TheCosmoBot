@@ -422,7 +422,7 @@ async def send_drugs(message: types.Message, state: FSMContext):
 #                             r = requests.get(url, headers=headers)
 #                             soup = BeautifulSoup(r.text, 'html.parser')
 #                             drug_descs = soup.find('div', 'kr_review_plain_text').text
-#                             prompt_review  = f'{drug_descs[:3000]} \n\nВыдели главную мысль из всех отзывов. Ответ начни со слов: "Этот препарат...'
+#                             prompt_review  = f'{drug_descs[:3000]} \n\nВыдели главную мысль из всех отзывов. Ответ начни со слов: "Этот препарат.'
 #                             response_text = generate(prompt_review)
 #                             drug_responses[name] = response_text
                             
@@ -460,7 +460,7 @@ async def send_drugs(message: types.Message, state: FSMContext):
 #                         r = requests.get(url, headers=headers)
 #                         soup = BeautifulSoup(r.text, 'html.parser')
 #                         drug_descs = soup.find('div', 'kr_review_plain_text').text
-#                         prompt_review  = f'{drug_descs[:4000]} \n\nВыдели главную мысль из всех отзывов. Ответ начни со слов: "Этот препарат...'
+#                         prompt_review  = f'{drug_descs[:4000]} \n\nВыдели главную мысль из всех отзывов. Ответ начни со слов: "Этот препарат.'
 #                         response_text = generate(prompt_review)
 #                         kislots_reviews[name] = response_text
                     
@@ -479,7 +479,7 @@ async def send_drugs(message: types.Message, state: FSMContext):
 #                         r = requests.get(url, headers=headers)
 #                         soup = BeautifulSoup(r.text, 'html.parser')
 #                         drug_descs = soup.find('div', 'kr_review_plain_text').text
-#                         prompt_review  = f'{drug_descs[:4000]} \n\nВыдели главную мысль из всех отзывов. Ответ начни со слов: "Этот препарат...'
+#                         prompt_review  = f'{drug_descs[:4000]} \n\nВыдели главную мысль из всех отзывов. Ответ начни со слов: "Этот препарат.'
 #                         response_text = generate(prompt_review)
 #                         pilings_reviews[name] = response_text
 
@@ -522,7 +522,7 @@ async def send_drugs(message: types.Message, state: FSMContext):
 #                                 r = requests.get(url, headers=headers)
 #                                 soup = BeautifulSoup(r.text, 'html.parser')
 #                                 drug_descs = soup.find('div', 'kr_review_plain_text').text
-#                                 prompt_review  = f'{drug_descs[:4000]} \n\nВыдели главную мысль из всех отзывов. Ответ начни со слов: "Этот препарат...'
+#                                 prompt_review  = f'{drug_descs[:4000]} \n\nВыдели главную мысль из всех отзывов. Ответ начни со слов: "Этот препарат.'
 #                                 response_text = generate(prompt_review)
 #                                 drug_responses[name] = response_text
 
@@ -561,7 +561,7 @@ async def send_drugs(message: types.Message, state: FSMContext):
 #                             r = requests.get(url, headers=headers)
 #                             soup = BeautifulSoup(r.text, 'html.parser')
 #                             drug_descs = soup.find('div', 'kr_review_plain_text').text
-#                             prompt_review  = f'{drug_descs[:4000]} \n\nВыдели главную мысль из всех отзывов. Ответ начни со слов: "Этот препарат...'
+#                             prompt_review  = f'{drug_descs[:4000]} \n\nВыдели главную мысль из всех отзывов. Ответ начни со слов: "Этот препарат.'
 #                             response_text = generate(prompt_review)
 #                             kislots_reviews[name] = response_text
                         
@@ -580,7 +580,7 @@ async def send_drugs(message: types.Message, state: FSMContext):
 #                             r = requests.get(url, headers=headers)
 #                             soup = BeautifulSoup(r.text, 'html.parser')
 #                             drug_descs = soup.find('div', 'kr_review_plain_text').text
-#                             prompt_review  = f'{drug_descs[:4000]} \n\nВыдели главную мысль из всех отзывов. Ответ начни со слов: "Этот препарат...'
+#                             prompt_review  = f'{drug_descs[:4000]} \n\nВыдели главную мысль из всех отзывов. Ответ начни со слов: "Этот препарат.'
 #                             response_text = generate(prompt_review)
 #                             pilings_reviews[name] = response_text
 
@@ -686,13 +686,13 @@ async def handle_review_buttons(callback_query: types.CallbackQuery, state: FSMC
                             # Generate summary for each chunk
                             chunk_summaries = []
                             for chunk in chunks:
-                                chunk_prompt = f'{chunk[:3000]} \n\nВыдели главную мысль из этого фрагмента отзывов. Ответ начни со слов: "Этот фрагмент отзывов говорит о том, что..."'
-                                chunk_summary = generate(chunk_prompt)  # Replace 'generate' with your summarization function
+                                chunk_prompt = f'{chunk[:3000]} \n\nВыдели главную мысль из этого фрагмента отзывов. Ответ начни со слов "Пользователи говорят, что этот препарат..."'
+                                chunk_summary = generate(chunk_prompt)   
                                 chunk_summaries.append(chunk_summary)
 
                             # Combine chunk summaries to create a global summary
                             combined_chunk_summaries = ' '.join(chunk_summaries)
-                            global_summary_prompt = f'{combined_chunk_summaries[:3000]} \n\nСуммируй общую мысль всех этих фрагментов. Ответ начни со слов: "Этот препарат..."'
+                            global_summary_prompt = f'{combined_chunk_summaries[:3000]} \n\nСуммируй общую мысль всех этих фрагментов. Ответ начни со слов "Этот препарат...'
                             global_summary = generate(global_summary_prompt)
 
                             # Store the global summary for the drug
@@ -733,11 +733,11 @@ async def handle_review_buttons(callback_query: types.CallbackQuery, state: FSMC
                         chunks = auto_chunk_comments(drug_descs, max_chunk_length)
                         chunk_summaries = []
                         for chunk in chunks:
-                            chunk_prompt = f'{chunk[:3000]} \n\nВыдели главную мысль из этого фрагмента отзывов...'
+                            chunk_prompt = f'{chunk[:3000]} \n\nВыдели главную мысль из этого фрагмента отзывов. Ответ начни со слов "Пользователи говорят, что этот препарат..."'
                             chunk_summary = generate(chunk_prompt)
                             chunk_summaries.append(chunk_summary)
                         combined_chunk_summaries = ' '.join(chunk_summaries)
-                        global_summary_prompt = f'{combined_chunk_summaries[:3000]} \n\nСуммируй общую мысль всех этих фрагментов...'
+                        global_summary_prompt = f'{combined_chunk_summaries[:3000]} \n\nСуммируй общую мысль всех этих фрагментов. Ответ начни со слов "Этот препарат...'
                         global_summary = generate(global_summary_prompt)
                         kislots_reviews[name] = global_summary
 
@@ -754,11 +754,11 @@ async def handle_review_buttons(callback_query: types.CallbackQuery, state: FSMC
                         chunks = auto_chunk_comments(drug_descs, max_chunk_length)
                         chunk_summaries = []
                         for chunk in chunks:
-                            chunk_prompt = f'{chunk[:3000]} \n\nВыдели главную мысль из этого фрагмента отзывов...'
+                            chunk_prompt = f'{chunk[:3000]} \n\nВыдели главную мысль из этого фрагмента отзывов. Ответ начни со слов "Пользователи говорят, что этот препарат..."'
                             chunk_summary = generate(chunk_prompt)
                             chunk_summaries.append(chunk_summary)
                         combined_chunk_summaries = ' '.join(chunk_summaries)
-                        global_summary_prompt = f'{combined_chunk_summaries[:3000]} \n\nСуммируй общую мысль всех этих фрагментов...'
+                        global_summary_prompt = f'{combined_chunk_summaries[:3000]} \n\nСуммируй общую мысль всех этих фрагментов. Ответ начни со слов "Этот препарат...'
                         global_summary = generate(global_summary_prompt)
                         pilings_reviews[name] = global_summary
 
@@ -803,19 +803,19 @@ async def handle_review_buttons(callback_query: types.CallbackQuery, state: FSMC
                                 # Generate summary for each chunk
                                 chunk_summaries = []
                                 for chunk in chunks:
-                                    chunk_prompt = f'{chunk[:3000]} \n\nВыдели главную мысль из этого фрагмента отзывов. Ответ начни со слов: "Этот фрагмент отзывов говорит о том, что..."'
+                                    chunk_prompt = f'{chunk[:3000]} \n\nВыдели главную мысль из этого фрагмента отзывов. Ответ начни со слов "Пользователи говорят, что этот препарат..."'
                                     chunk_summary = generate(chunk_prompt)  # Replace 'generate' with your summarization function
                                     chunk_summaries.append(chunk_summary)
 
                                 # Combine chunk summaries to create a global summary
                                 combined_chunk_summaries = ' '.join(chunk_summaries)
-                                global_summary_prompt = f'{combined_chunk_summaries[:3000]} \n\nСуммируй общую мысль всех этих фрагментов. Ответ начни со слов: "Этот препарат..."'
+                                global_summary_prompt = f'{combined_chunk_summaries[:3000]} \n\nСуммируй общую мысль всех этих фрагментов. Ответ начни со слов "Этот препарат...'
                                 global_summary = generate(global_summary_prompt)
 
                                 # Store the global summary for the drug
                                 drug_responses[name] = global_summary
                                     
-                        all_drug_responses[x] = drug_responses       
+                            all_drug_responses[x] = drug_responses       
 
                         for cat, drugnamesNreviews in all_drug_responses.items():
                             smiley = category_smileys.get(cat, "😃")  # По умолчанию используется "😃"
@@ -849,11 +849,11 @@ async def handle_review_buttons(callback_query: types.CallbackQuery, state: FSMC
                             chunks = auto_chunk_comments(drug_descs, max_chunk_length)
                             chunk_summaries = []
                             for chunk in chunks:
-                                chunk_prompt = f'{chunk[:3000]} \n\nВыдели главную мысль из этого фрагмента отзывов...'
+                                chunk_prompt = f'{chunk[:3000]} \n\nВыдели главную мысль из этого фрагмента отзывов. Ответ начни со слов "Пользователи говорят, что этот препарат..."'
                                 chunk_summary = generate(chunk_prompt)
                                 chunk_summaries.append(chunk_summary)
                             combined_chunk_summaries = ' '.join(chunk_summaries)
-                            global_summary_prompt = f'{combined_chunk_summaries[:3000]} \n\nСуммируй общую мысль всех этих фрагментов...'
+                            global_summary_prompt = f'{combined_chunk_summaries[:3000]} \n\nСуммируй общую мысль всех этих фрагментов. Ответ начни со слов "Этот препарат...'
                             global_summary = generate(global_summary_prompt)
                             kislots_reviews[name] = global_summary
                         
@@ -871,11 +871,11 @@ async def handle_review_buttons(callback_query: types.CallbackQuery, state: FSMC
                             chunks = auto_chunk_comments(drug_descs, max_chunk_length)
                             chunk_summaries = []
                             for chunk in chunks:
-                                chunk_prompt = f'{chunk[:3000]} \n\nВыдели главную мысль из этого фрагмента отзывов...'
+                                chunk_prompt = f'{chunk[:3000]} \n\nВыдели главную мысль из этого фрагмента отзывов. Ответ начни со слов "Пользователи говорят, что этот препарат..."'
                                 chunk_summary = generate(chunk_prompt)
                                 chunk_summaries.append(chunk_summary)
                             combined_chunk_summaries = ' '.join(chunk_summaries)
-                            global_summary_prompt = f'{combined_chunk_summaries[:3000]} \n\nСуммируй общую мысль всех этих фрагментов...'
+                            global_summary_prompt = f'{combined_chunk_summaries[:3000]} \n\nСуммируй общую мысль всех этих фрагментов. Ответ начни со слов "Этот препарат...'
                             global_summary = generate(global_summary_prompt)
                             pilings_reviews[name] = global_summary
 
