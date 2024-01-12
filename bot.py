@@ -362,6 +362,7 @@ async def send_drugs(message: types.Message, state: FSMContext):
                     result += f'\nОшибка: {ex}'
     else:
         result = 'У вас не обнаружено проблемок, все хорошо 🦄'
+        await UserStates.WaitingForPhoto.set()
     await bot.send_message(user_id, result)
 
     try:
@@ -792,28 +793,28 @@ async def handle_review_buttons(callback_query: types.CallbackQuery, state: FSMC
                             urls = category_data['page_url'][:3]
                             top_3_names = category_data['drug_name'][:3].tolist()
 
-                        for name, url in zip(top_3_names, urls):
-                            # Combine all comments for a particular drug
-                            drug_descs = all_comments.loc[all_comments['Drug Name'] == name]['Comments'].str.cat(sep='\r\n')[:30000]
+                            for name, url in zip(top_3_names, urls):
+                                # Combine all comments for a particular drug
+                                drug_descs = all_comments.loc[all_comments['Drug Name'] == name]['Comments'].str.cat(sep='\r\n')[:30000]
 
-                            # Chunk the combined comments using the auto_chunk_comments function
-                            chunks = auto_chunk_comments(drug_descs, 3000)  # Assuming 3000 is the max chunk length
+                                # Chunk the combined comments using the auto_chunk_comments function
+                                chunks = auto_chunk_comments(drug_descs, 3000)  # Assuming 3000 is the max chunk length
 
-                            # Generate summary for each chunk
-                            chunk_summaries = []
-                            for chunk in chunks:
-                                chunk_prompt = f'{chunk[:3000]} \n\nВыдели главную мысль из этого фрагмента отзывов. Ответ начни со слов: "Этот фрагмент отзывов говорит о том, что..."'
-                                chunk_summary = generate(chunk_prompt)  # Replace 'generate' with your summarization function
-                                chunk_summaries.append(chunk_summary)
+                                # Generate summary for each chunk
+                                chunk_summaries = []
+                                for chunk in chunks:
+                                    chunk_prompt = f'{chunk[:3000]} \n\nВыдели главную мысль из этого фрагмента отзывов. Ответ начни со слов: "Этот фрагмент отзывов говорит о том, что..."'
+                                    chunk_summary = generate(chunk_prompt)  # Replace 'generate' with your summarization function
+                                    chunk_summaries.append(chunk_summary)
 
-                            # Combine chunk summaries to create a global summary
-                            combined_chunk_summaries = ' '.join(chunk_summaries)
-                            global_summary_prompt = f'{combined_chunk_summaries[:3000]} \n\nСуммируй общую мысль всех этих фрагментов. Ответ начни со слов: "Этот препарат..."'
-                            global_summary = generate(global_summary_prompt)
+                                # Combine chunk summaries to create a global summary
+                                combined_chunk_summaries = ' '.join(chunk_summaries)
+                                global_summary_prompt = f'{combined_chunk_summaries[:3000]} \n\nСуммируй общую мысль всех этих фрагментов. Ответ начни со слов: "Этот препарат..."'
+                                global_summary = generate(global_summary_prompt)
 
-                            # Store the global summary for the drug
-                            drug_responses[name] = global_summary
-                                
+                                # Store the global summary for the drug
+                                drug_responses[name] = global_summary
+                                    
                         all_drug_responses[x] = drug_responses       
 
                         for cat, drugnamesNreviews in all_drug_responses.items():
