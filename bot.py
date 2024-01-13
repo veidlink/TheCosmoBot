@@ -361,7 +361,7 @@ async def send_drugs(message: types.Message, state: FSMContext):
                 except Exception as ex:
                     result += f'\nОшибка: {ex}'
     else:
-        result = 'У вас не обнаружено проблемок, все хорошо 🦄'
+        result = 'У вас не обнаружено проблем 🦄'
         await UserStates.WaitingForPhoto.set()
     await bot.send_message(user_id, result)
 
@@ -371,239 +371,17 @@ async def send_drugs(message: types.Message, state: FSMContext):
     except Exception as e:
         logging.error(f'Failed to delete file: {e}')
 
-    if result != 'У вас не обнаружено проблемок, все хорошо 🦄':
+    if result != 'У вас не обнаружено проблем 🦄':
         # Создание inline-кнопок
         get_reviews_button = InlineKeyboardButton(text="Суммаризировать отзывы на препараты", callback_data="get_reviews")
         not_summarize_button = InlineKeyboardButton(text="Не суммаризировать", callback_data="not_summarize_reviews")
         
         keyboard = InlineKeyboardMarkup().add(get_reviews_button).add(not_summarize_button)  # Arrange buttons vertically
-        
-        # Отправка сообщения с кнопками
-        await bot.send_message(user_id, "Выберите действие:", reply_markup=keyboard)
+        # Отправка сообщения с кнопками       
+        msg = bot.send_message(user_id, "Выберите действие:", reply_markup=keyboard)
+        await msg
     else:
         pass
-
-# @dp.callback_query_handler(lambda callback_query: callback_query.data in ["get_reviews", "not_summarize_reviews"], state=UserStates.ShowingResults)
-# async def handle_review_buttons(callback_query: types.CallbackQuery, state: FSMContext):
-#     user_id = callback_query.from_user.id
-#     user_data = await state.get_data()
-
-#     if callback_query.data == "get_reviews":
-#         await UserStates.ParsingReviews.set()
-#         await bot.send_message(user_id, 'Немного терпения... ⏳')
-
-#         detected_labels = user_data.get('detected_labels', [])
-#         headers = requests.utils.default_headers()
-        
-#         if len(detected_labels)==1:
-#             detected_labels = detected_labels[0]
-#             # await message.reply(detected_labels)
-#             if detected_labels != 'hyperceratos':
-#                 if detected_labels in ['papula', 'postacne', 'pustula']:
-#                     data = pd.read_csv("datasets/clean/acne_clean_with_categories.csv")
-#                 elif detected_labels == "cuperos":
-#                     data = pd.read_csv("datasets/clean/cuperoz_clean_with_categories.csv")
-#                 elif detected_labels == 'camedon':
-#                     data = pd.read_csv("datasets/clean/camedons_clean_with_categories.csv")
-
-#                 try:
-#                     all_drug_responses = {}
-#                     for x in data['category'].unique():
-#                         result = ''
-#                         category_data = data[data['category'] == x]
-#                         top_3_names = category_data['drug_name'][:3].tolist()            
-#                         urls = category_data['page_url'][:3]
-#                         drug_responses = {}
-            
-#                         for name, url in zip(top_3_names, urls):
-#                             url = 'https://'+url
-#                         # Отправляем HTTP запрос и получаем ответ
-#                             await asyncio.sleep(1)
-#                             r = requests.get(url, headers=headers)
-#                             soup = BeautifulSoup(r.text, 'html.parser')
-#                             drug_descs = soup.find('div', 'kr_review_plain_text').text
-#                             prompt_review  = f'{drug_descs[:3000]} \n\nВыдели главную мысль из всех отзывов. Ответ начни со слов: "Этот препарат.'
-#                             response_text = generate(prompt_review)
-#                             drug_responses[name] = response_text
-                            
-#                         all_drug_responses[x] = drug_responses                  
-
-#                     for cat, drugnamesNreviews in all_drug_responses.items():
-#                         smiley = category_smileys.get(cat, "😃")  # По умолчанию используется "😃"
-#                         result = f"\n\n{smiley} Категория: {cat}"
-#                         for i, (name, drug_r3views) in enumerate(drugnamesNreviews.items(), start=1):
-#                             result += f'\n\n{i}. {name}. \n\n{drug_r3views}'
-#                         await bot.send_message(user_id, result)                    
-                        
-#                 except Exception as ex:
-#                     result = f'\nОшибка при получении отзывов с сайта. Пожалуйста, попробуйте еще раз.'
-#                     await bot.send_message(user_id, result)
-
-#             else:
-#                 data = pd.read_csv('datasets/clean/kislots_and_pilings.csv')
-#                 kislots_names = data[data['category'] =='кислота']['drug_name'].tolist()
-#                 pilings_names = data[data['category'] =='пилинг']['drug_name'].tolist()
-
-#                 try:
-#                     result = ''
-#                     pilings_reviews = {}
-#                     kislots_reviews = {}
-#                     top_3_kislots = kislots_names[:3]
-#                     top_3_pilings = pilings_names[:3]
-#                     urls_kislots = data[data['category'] =='кислота']['page_url'][:3]
-#                     urls_pilings = data[data['category'] =='пилинг']['page_url'][:3]
-
-#                     for name, url in zip(top_3_kislots, urls_kislots):
-#                         url = 'https://'+url
-#                         # Отправляем HTTP запрос и получаем ответ
-#                         await asyncio.sleep(1)
-#                         r = requests.get(url, headers=headers)
-#                         soup = BeautifulSoup(r.text, 'html.parser')
-#                         drug_descs = soup.find('div', 'kr_review_plain_text').text
-#                         prompt_review  = f'{drug_descs[:4000]} \n\nВыдели главную мысль из всех отзывов. Ответ начни со слов: "Этот препарат.'
-#                         response_text = generate(prompt_review)
-#                         kislots_reviews[name] = response_text
-                    
-#                     # Вывод результатов для кислот
-#                     smiley = category_smileys.get('кислота', "😃")
-#                     result = f'\n\n{smiley} Кислоты:'
-#                     for i, (name, reviews) in enumerate(kislots_reviews.items(), start=1):
-#                         result += f'\n\n{i}. {name}. \n\n{reviews}'
-#                     await bot.send_message(user_id, result)
-#                     await bot.send_message(user_id, '\n\nДумаю... ⏳')
-
-#                     for name, url in zip(top_3_pilings, urls_pilings):
-#                         url = 'https://'+url
-#                         # Отправляем HTTP запрос и получаем ответ
-#                         await asyncio.sleep(1)
-#                         r = requests.get(url, headers=headers)
-#                         soup = BeautifulSoup(r.text, 'html.parser')
-#                         drug_descs = soup.find('div', 'kr_review_plain_text').text
-#                         prompt_review  = f'{drug_descs[:4000]} \n\nВыдели главную мысль из всех отзывов. Ответ начни со слов: "Этот препарат.'
-#                         response_text = generate(prompt_review)
-#                         pilings_reviews[name] = response_text
-
-#                     # Вывод результатов для пилингов
-#                     smiley = category_smileys.get('пилинг', "😃")
-#                     result = f'\n\n{smiley} Пилинги:'
-#                     for i, (name, reviews) in enumerate(pilings_reviews.items(), start=1):
-#                         result += f'\n\n{i}. {name}. \n\n{reviews}'
-#                     await bot.send_message(user_id, result)
-
-#                 except Exception as ex:
-#                     result = f'\nОшибка 2: {ex}'
-#                     await bot.send_message(user_id, result)
-
-
-#         elif len(detected_labels)>=2:
-#             detected_labels = ['postacne' if x in ['papula', 'pustula'] else x for x in detected_labels]
-#             for problem in detected_labels:
-#                 if problem != 'hyperceratos':
-#                     if problem in ['papula', 'postacne', 'pustula']:
-#                         data = pd.read_csv("datasets/clean/acne_clean_with_categories.csv")
-#                     elif problem == "cuperos":
-#                         data = pd.read_csv("datasets/clean/cuperoz_clean_with_categories.csv")
-#                     elif problem == 'camedon':
-#                         data = pd.read_csv("datasets/clean/camedons_clean_with_categories.csv")
-
-#                     try:
-#                         all_drug_responses = {}
-#                         for x in data['category'].unique():
-#                             result = ''
-#                             drug_responses = {}
-#                             category_data = data[data['category'] == x]
-#                             urls = category_data['page_url'][:3]
-#                             top_3_names = category_data['drug_name'][:3].tolist()
-
-#                             for name, url in zip(top_3_names, urls):
-#                                 url = 'https://'+url
-#                             # Отправляем HTTP запрос и получаем ответ
-#                                 await asyncio.sleep(1)
-#                                 r = requests.get(url, headers=headers)
-#                                 soup = BeautifulSoup(r.text, 'html.parser')
-#                                 drug_descs = soup.find('div', 'kr_review_plain_text').text
-#                                 prompt_review  = f'{drug_descs[:4000]} \n\nВыдели главную мысль из всех отзывов. Ответ начни со слов: "Этот препарат.'
-#                                 response_text = generate(prompt_review)
-#                                 drug_responses[name] = response_text
-
-#                             all_drug_responses[x] = drug_responses    
-
-#                         for cat, drugnamesNreviews in all_drug_responses.items():
-#                             smiley = category_smileys.get(cat, "😃")  # По умолчанию используется "😃"
-#                             result = f"\n\n{smiley} Категория: {cat}"
-#                             for i, (name, drug_r3views) in enumerate(drugnamesNreviews.items(), start=1):
-#                                 result += f'\n\n{i}. {name}. \n\n{drug_r3views}'
-#                             await bot.send_message(user_id, result)  
-#                             # await message.reply('\n\nДумаю... ⏳')
-
-#                     except Exception as ex:
-#                         result = f'\nОшибка при получении отзывов с сайта. Пожалуйста, попробуйте еще раз.'
-#                         await bot.send_message(user_id, result)
-                        
-#                 else:
-#                     data = pd.read_csv('datasets/clean/kislots_and_pilings.csv')
-#                     kislots_names = data[data['category'] =='кислота']['drug_name'].tolist()
-#                     pilings_names = data[data['category'] =='пилинг']['drug_name'].tolist()
-
-#                     try:
-#                         result = ''
-#                         pilings_reviews = {}
-#                         kislots_reviews = {}
-#                         top_3_kislots = kislots_names[:3]
-#                         top_3_pilings = pilings_names[:3]
-#                         urls_kislots = data[data['category'] =='кислота']['page_url'][:3]
-#                         urls_pilings = data[data['category'] =='пилинг']['page_url'][:3]
-
-#                         for name, url in zip(top_3_kislots, urls_kislots):
-#                             url = 'https://'+url
-#                             # Отправляем HTTP запрос и получаем ответ
-#                             await asyncio.sleep(1)
-#                             r = requests.get(url, headers=headers)
-#                             soup = BeautifulSoup(r.text, 'html.parser')
-#                             drug_descs = soup.find('div', 'kr_review_plain_text').text
-#                             prompt_review  = f'{drug_descs[:4000]} \n\nВыдели главную мысль из всех отзывов. Ответ начни со слов: "Этот препарат.'
-#                             response_text = generate(prompt_review)
-#                             kislots_reviews[name] = response_text
-                        
-#                         # Вывод результатов для кислот
-#                         smiley = category_smileys.get('кислота', "😃")
-#                         result = f'\n\n{smiley} Кислоты:'
-#                         for i, (name, reviews) in enumerate(kislots_reviews.items(), start=1):
-#                             result += f'\n\n{i}. {name}. \n\n{reviews}'
-#                         await bot.send_message(user_id, result) 
-#                         await bot.send_message(user_id, '\n\nДумаю... ⏳')
-
-#                         for name, url in zip(top_3_pilings, urls_pilings):
-#                             url = 'https://'+url
-#                             # Отправляем HTTP запрос и получаем ответ
-#                             await asyncio.sleep(1)
-#                             r = requests.get(url, headers=headers)
-#                             soup = BeautifulSoup(r.text, 'html.parser')
-#                             drug_descs = soup.find('div', 'kr_review_plain_text').text
-#                             prompt_review  = f'{drug_descs[:4000]} \n\nВыдели главную мысль из всех отзывов. Ответ начни со слов: "Этот препарат.'
-#                             response_text = generate(prompt_review)
-#                             pilings_reviews[name] = response_text
-
-#                         # Вывод результатов для пилингов
-#                         smiley = category_smileys.get('пилинг', "😃")
-#                         result = f'\n\n{smiley} Пилинги:'
-#                         for i, (name, reviews) in enumerate(pilings_reviews.items(),start=1):
-#                             result += f'\n\n{i}. {name}. \n\n{reviews}'
-#                         await bot.send_message(user_id, result) 
-
-#                     except Exception as ex:
-#                         result = f'\nОшибка 2: {ex}'
-#                         await bot.send_message(user_id, result)   
-
-#         await bot.send_message(user_id, 'Введите команду /start для начала работы')
-#         await state.finish()  # Завершение сессии состояний после выполнения действия
-
-#     elif callback_query.data == "not_summarize_reviews":
-#         await bot.send_message(user_id, 'Введите команду /start для начала работы')
-#         await state.finish()  # Reset the state to its initial state
-#         # Send a message or perform any other desired actions when "Не суммаризировать отзывы на препараты" is clicked
-
-#     # await callback_query.answer()  # Acknowledge the button press
 
 def auto_chunk_comments(comments, max_chunk_length):
     """
@@ -651,7 +429,7 @@ async def handle_review_buttons(callback_query: types.CallbackQuery, state: FSMC
 
     if callback_query.data == "get_reviews":
         await UserStates.ParsingReviews.set()
-        await bot.send_message(user_id, 'Немного терпения... ⏳')
+        await bot.send_message(user_id, 'Немного терпения... ⏳', reply_markup=types.ReplyKeyboardRemove())
 
         detected_labels = user_data.get('detected_labels', [])
         headers = requests.utils.default_headers()
@@ -894,12 +672,12 @@ async def handle_review_buttons(callback_query: types.CallbackQuery, state: FSMC
         await state.finish()  # Завершение сессии состояний после выполнения действия
 
     elif callback_query.data == "not_summarize_reviews":
-        await bot.send_message(user_id, 'Введите команду /start для начала работы')
-        await state.finish()  # Reset the state to its initial state
+        # await bot.send_message(user_id, 'Введите команду /start для начала работы')
+        await bot.send_message(user_id, text="Готовы к обработке следующей фотографии ⏳")
+        await UserStates.WaitingForPhoto.set()  # Reset the state to its initial state
         # Send a message or perform any other desired actions when "Не суммаризировать отзывы на препараты" is clicked
 
     # await callback_query.answer()  # Acknowledge the button press
-
 
 if __name__ == '__main__':
     from aiogram import executor
